@@ -47,6 +47,7 @@ import {platformBrowserDynamic} from '@angular/platform-browser-dynamic';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {InputOverviewExample} from './app/input-overview-example';
 import { IdNumberDirective } from './app/id-number.directive';
+import { ValidatorService } from './app/validator.service';
 
 @NgModule({
   exports: [
@@ -104,7 +105,7 @@ export class DemoMaterialModule {}
   entryComponents: [InputOverviewExample],
   declarations: [InputOverviewExample, IdNumberDirective],
   bootstrap: [InputOverviewExample],
-  providers: []
+  providers: [ValidatorService]
 })
 export class AppModule {}
 

@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { ValidatorService } from './validator.service';
 
 /**
  * @title Basic Inputs
@@ -12,10 +13,19 @@ import { FormGroup, FormControl, Validators } from '@angular/forms';
 })
 export class InputOverviewExample {
   form: FormGroup;
-  constructor(private formBuilder: FormBuilder) {
-    this.form = formBuilder.group({
+  constructor(
+    private formBuilder: FormBuilder,
+    private validatorService: ValidatorService
+  ) {
+    this.form = this.formBuilder.group({
       rft: ['', []],
     });
+  }
+
+  ngOnInit() {
+    this.validatorService.setValidators([
+      { field: 'rft', regex: '', visible: true },
+    ]);
   }
 }
 

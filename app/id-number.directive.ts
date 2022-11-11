@@ -1,5 +1,9 @@
+import { Input } from '@angular/core';
+import { ElementRef } from '@angular/core';
+import { ContentChild } from '@angular/core';
+import { TemplateRef } from '@angular/core';
+import { ViewContainerRef } from '@angular/core';
 import { Directive } from '@angular/core';
-import { FormControl } from '@angular/forms';
 import { NgControl, Validators } from '@angular/forms';
 import { ValidatorService } from './validator.service';
 
@@ -7,31 +11,41 @@ import { ValidatorService } from './validator.service';
   selector: '[appIdNumber]',
 })
 export class IdNumberDirective {
-  hasSetvalidator = false;
+  @ContentChild(NgControl) ngControl: NgControl;
+  private validators: any[] = [];
 
   constructor(
-    private ngControl: NgControl,
+    private view: ViewContainerRef,
+    private template: TemplateRef<any>,
     private validatorService: ValidatorService
-  ) {}
-
-  ngOnInit() {
-    this.validatorService
-      .validators()
-      .subscribe((validators) => this.resolveValidator(validators));
+  ) {
+    this.validatorService.validators().subscribe((validators) => {
+      this.validators = validators;
+      this.resolveValidatorAndView();
+    });
   }
 
-  resolveValidator(validators: any[]) {
+  ngAfterContentInit() {
+    this.resolveValidatorAndView();
+  }
+
+  resolveValidatorAndView() {
     const control = this.ngControl.control;
     const controlName = this.ngControl.name;
 
-    const validator = validators.find((v) => v.field === controlName);
+    if (!controlName) return;
 
-    if (!validator) {
+    const validator = this.validators.find((v) => v.field === controlName);
+
+    if (!validator) return;
+
+    if (!validator.visible) {
       control.setValidators([]);
+      this.view.clear();
       return;
     }
 
-    if (validator.visible && validator.regex) {
+    if (validator.regex) {
       // TODO change to -> control.addValidators([...])
       control.setValidators([Validators.pattern(validator.regex)]);
     }
